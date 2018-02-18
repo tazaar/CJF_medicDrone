@@ -15,9 +15,10 @@ Examples:
     (end)
 
 Author: 
-	Popinjay John 2018-02-14
+	Popinjay John 2018-02-18
 
 ---------------------------------------------------------------------------- */
+
 // CBA hashmap to keep track of all drones
 CJF_medicDrone_drones = [] call CBA_fnc_hashCreate;
 
@@ -44,9 +45,9 @@ CJF_fnc_medicDroneSpawn = {
 
 	// Add our healing action/interaction to drone, Heal is a local function
 	// Vanilla Arma 3 action menu
-	[_veh, ["Heal", {_this select 0 call CJF_fnc_medicDrone_healLocalPlayer;}]] remoteExec ["addAction", 0, _veh];
+	[_veh, ["Heal", {_this select 0 call CJF_fnc_medicDroneHealLocalPlayer;}]] remoteExec ["addAction", 0, _veh];
 	// ACE3 Interaction menu
-	_action = ["droneHeal","Heal","",{_this select 0 call CJF_fnc_medicDrone_healLocalPlayer;},{true}] call ace_interact_menu_fnc_createAction;
+	_action = ["droneHeal","Heal","",{_this select 0 call CJF_fnc_medicDroneHealLocalPlayer;},{true}] call ace_interact_menu_fnc_createAction;
 	// [_veh, 0, ["ACE_MainActions"], _action] call ace_interact_menu_fnc_addActionToObject;
 	[_veh, 0, ["ACE_MainActions"], _action] remoteExec ["ace_interact_menu_fnc_addActionToObject", 0, _veh];
 
@@ -103,7 +104,7 @@ CJF_fnc_medicDroneUsedLogic = {
 	};
 };
 
-// CBA Event handlers
+// Event handlers
 ["CJF_eh_medicDroneRequest", {(_this) spawn CJF_fnc_medicDroneSpawn}] call CBA_fnc_addEventHandler;
 ["CJF_eh_medicDroneUsedHeal", {(_this) spawn CJF_fnc_medicDroneUsedLogic}] call CBA_fnc_addEventHandler;
 

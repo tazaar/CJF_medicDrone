@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------------
-Function: CJF_fnc_medicDroneLocal
+Function: XEH_preInit
 
 Description:
-	Shared variables and functions for medical drone.
+	Shared variables and CBA settings for medical drone.
 	Must be called in an CBA XEH for CBA Settings compatbility.
 
 Parameters:
@@ -21,7 +21,7 @@ Examples:
     (end)
 
 Author: 
-	Popinjay John 2018-02-14
+	Popinjay John 2018-02-18
 
 ---------------------------------------------------------------------------- */
 
@@ -29,7 +29,7 @@ Author:
 	"CJF_medicDrone_cooldown",
 	"SLIDER",
 	["Medic drone cooldown", "Cooldown in addition to loiter time"],
-	"Medic drone",
+	"CJF Medic drone",
 	[0, 3600, 600, 0],
 	1
 ] call CBA_Settings_fnc_init;
@@ -38,7 +38,7 @@ Author:
 	"CJF_medicDrone_maxLoiter",
 	"SLIDER",
 	["Medic drone loiter", "Time from spawn until despawn"],
-	"Medic drone",
+	"CJF Medic drone",
 	[20, 900, 120, 0],
 	1
 ] call CBA_Settings_fnc_init;
@@ -47,17 +47,35 @@ Author:
 	"CJF_medicDrone_maxUses",
 	"SLIDER",
 	["Medic drone useages", "How many times can heal be used"],
-	"Medic drone",
+	"CJF Medic drone",
 	[1, 100, 2, 0],
 	1
 ] call CBA_Settings_fnc_init;
 
 [
-	"CJF_medicDrone_ACEonly",
-	"CHECKBOX",
-	["ACE request only", "Tick to only request drone from ACE self-interact"],
-	"Medic drone",
-	false
+	"CJF_medicDrone_actionStyle",
+	"LIST",
+	["Action style", "Chose where to be able to call drone from, actual healing will always be available from both"],
+	"CJF Medic drone",
+	[["both", "vanilla", "ace"], ["Both", "Vanilla", "ACE 3"], 0],
+	2,
+	{
+		if (hasInterface) then {
+			if (CJF_medicDrone_isCallable) then {
+				CJF_fnc_medicDroneRemoveActions;
+				CJF_fnc_medicDroneRegisterActions;
+			};
+		};
+	}
+] call CBA_Settings_fnc_init;
+
+[
+	"CJF_medicDrone_maxOnline",
+	"SLIDER",
+	["Players online restriction", "If more players than this setting is online, disable medic drone"],
+	"CJF Medic drone",
+	[1, 100, 5, 0],
+	1
 ] call CBA_Settings_fnc_init;
 
 // End of file, return true for success
