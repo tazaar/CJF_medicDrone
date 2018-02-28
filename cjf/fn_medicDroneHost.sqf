@@ -39,18 +39,33 @@ CJF_fnc_medicDroneSpawn = {
 	_veh addItemCargoGlobal ["ACE_packingBandage", 5];
 	_veh addItemCargoGlobal ["ACE_morphine", 5];
 	_veh addItemCargoGlobal ["ACE_tourniquet", 5];
-	
-	// Add drone and pad to server list of drones key = droneID, value = Current uses, vehicle and pad object
-	[CJF_medicDrone_drones, _veh, [CJF_medicDrone_maxUses, _veh, _pad]] call CBA_fnc_hashSet;
 
-	// Add our healing action/interaction to drone, Heal is a local function
-	// Vanilla Arma 3 action menu
-	[_veh, ["Heal", {_this select 0 call CJF_fnc_medicDroneHealLocalPlayer;}]] remoteExec ["addAction", 0, _veh];
+	// Hold action
+	_actionID = [
+		_veh,																// Object the action is attached to
+		"Drone heal",														// Title of the action
+		"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_revive_ca.paa",		// Idle icon shown on screen
+		"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_revive_ca.paa",		// Progress icon shown on screen
+		"_this distance _target < 3",										// Condition for the action to be shown
+		"_caller distance _target < 3",										// Condition for the action to progress
+		{},																	// Code executed when action starts
+		{},																	// Code executed on every progress tick
+		{_this select 0 call CJF_fnc_medicDroneHealLocalPlayer;},			// Code executed on completion
+		{},																	// Code executed on interrupted
+		[],																	// Arguments passed to the scripts as _this select 3
+		CJF_medicDrone_holdTime,											// Action duration [s]
+		6,																	// Priority
+		false,																// Remove on completion
+		false																// Show in unconscious state 
+	] remoteExec ["BIS_fnc_holdActionAdd", [0,2] select isDedicated, _veh];	// example for MP compatible implementation
+	
 	// ACE3 Interaction menu
 	_action = ["droneHeal","Heal","",{_this select 0 call CJF_fnc_medicDroneHealLocalPlayer;},{true}] call ace_interact_menu_fnc_createAction;
-	// [_veh, 0, ["ACE_MainActions"], _action] call ace_interact_menu_fnc_addActionToObject;
 	[_veh, 0, ["ACE_MainActions"], _action] remoteExec ["ace_interact_menu_fnc_addActionToObject", 0, _veh];
 
+	// Add drone, pad and actionID to server list of drones key = droneID, value = Current uses, vehicle object, pad object and action ID
+	[CJF_medicDrone_drones, _veh, [CJF_medicDrone_maxUses, _veh, _pad, _actionID]] call CBA_fnc_hashSet;
+	
 	// Tell drone to land
 	_veh land "LAND";
 	// Wait loiter time then remove after loiter has expired
@@ -65,9 +80,12 @@ CJF_fnc_medicDroneRemoveActions = {
 	// get our vehicle array, If it's not here actions has already been removed
 	if (!isNil {[CJF_medicDrone_drones, _id] call CBA_fnc_hashGet}) then {
 		_drone = [CJF_medicDrone_drones, _id] call CBA_fnc_hashGet;
-		// Get our drone vehicle
+		// Get our drone vehicle object and action ID
 		_veh = _drone select 1;
-		[_veh] remoteExec ["removeAllActions", 0];
+		_actionID = _drone select 3;
+		// Remove hold action
+		[_veh, (parseNumber _actionID)] call BIS_fnc_holdActionRemove;
+		// Remove ACE3 action
 		[_veh, 0,["ACE_MainActions", "droneHeal"]] remoteExec ["ace_interact_menu_fnc_removeActionFromObject", 0];
 	};
 };

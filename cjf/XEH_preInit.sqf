@@ -70,6 +70,15 @@ Author:
 ] call CBA_Settings_fnc_init;
 
 [
+	"CJF_medicDrone_holdTime",
+	"SLIDER",
+	["Interaction time", "How long must players hold to heal"],
+	"CJF Medic drone",
+	[1, 30, 5, 0],
+	1
+] call CBA_Settings_fnc_init;
+
+[
 	"CJF_medicDrone_maxOnline",
 	"SLIDER",
 	["Players online restriction", "If more players than this setting is online, disable medic drone"],
