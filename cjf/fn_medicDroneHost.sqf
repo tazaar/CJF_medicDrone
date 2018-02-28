@@ -62,9 +62,14 @@ CJF_fnc_medicDroneSpawn = {
 // Remove actions from drone
 CJF_fnc_medicDroneRemoveActions = {
 	params ["_id"];
-	_drone = [CJF_medicDrone_drones, _id] call CBA_fnc_hashGet;
-	[(_drone select 1)] remoteExec ["removeAllActions", 0];
-	[(_drone select 1),0,["ACE_MainActions", "droneHeal"]] remoteExec ["ace_interact_menu_fnc_removeActionFromObject", 0];
+	// get our vehicle array, If it's not here actions has already been removed
+	if (!isNil {[CJF_medicDrone_drones, _id] call CBA_fnc_hashGet}) then {
+		_drone = [CJF_medicDrone_drones, _id] call CBA_fnc_hashGet;
+		// Get our drone vehicle
+		_veh = _drone select 1;
+		[_veh] remoteExec ["removeAllActions", 0];
+		[_veh, 0,["ACE_MainActions", "droneHeal"]] remoteExec ["ace_interact_menu_fnc_removeActionFromObject", 0];
+	};
 };
 
 // Fly away and despawn objects

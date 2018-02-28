@@ -47,7 +47,7 @@ CJF_fnc_medicDroneRegisterActions = {
 	CJF_medicDrone_isCallable = true;
 };
 
-CJF_fnc_medicDroneRemoveActions = {
+CJF_fnc_medicDroneRemoveCalldownActions = {
 	if (CJF_medicDrone_actionStyle == "both" || CJF_medicDrone_actionStyle == "vanilla") then {
 		// Remove vanilla
 		player removeAction CJF_medicDroneAction;
@@ -67,14 +67,14 @@ CJF_fnc_medicDroneRequester = {
 		["CJF_eh_medicDroneRequest", [_pos]] call CBA_fnc_serverEvent;
 		CJF_medicDrone_lastCalled = time;
 		// Get rid of actions until they can be called again.
-		call CJF_fnc_medicDroneRemoveActions:
+		call CJF_fnc_medicDroneRemoveCalldownActions;
 		[{call CJF_fnc_medicDroneCheckAndAddActions;}, [], (CJF_medicDrone_maxLoiter + CJF_medicDrone_cooldown)] call CBA_fnc_waitAndExecute;
 	};	
 };
 
 // Restrict useage if player number is greater than setting
 CJF_fnc_medicDroneCheckAndAddActions = {
-	if (CJF_medicDrone_underPlayersLimit == true) then {
+	if (CJF_medicDrone_underPlayersLimit) then {
 		call CJF_fnc_medicDroneRegisterActions;
 	}
 };
@@ -85,7 +85,7 @@ CJF_eh_medicDronePlayersChanged = {
 	} else {
 		// Remove actions if it was active
 		if (CJF_medicDrone_isCallable == true) then {
-			call CJF_fnc_medicDroneRemoveActions;
+			call CJF_fnc_medicDroneRemoveCalldownActions;
 		};
 		CJF_medicDrone_underPlayersLimit = false;
 	};
