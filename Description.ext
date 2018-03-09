@@ -1,16 +1,15 @@
 // CBA Extended event handlers
 class Extended_PreInit_EventHandlers {
-	medicDroneMission = call compile preprocessFileLineNumbers "cjf\XEH_preInit.sqf";
+	medicDroneMission = call compile preprocessFileLineNumbers "cjf\medicDrone\XEH_preInit.sqf";
 };
 
 class CfgFunctions {
 	class CJF {
 		class medical
 		{
-			file = "cjf";
+			file = "cjf\medicDrone";
 			class medicDroneHost {};
 			class medicDroneLocal {};
 		};
 	};
 };
-
